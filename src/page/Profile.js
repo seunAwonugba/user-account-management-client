@@ -21,27 +21,24 @@ export default function Profile() {
     const paperStyle = { padding: "30px 20px", width: 550 };
     const marginStyle = { marginTop: "15px" };
 
-    const [firstName, setFirstName] = React.useState("");
-    const [lastName, setLastName] = React.useState("");
-    const [email, setEmail] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [profile, setProfile] = React.useState({});
+    // const [image, setImage] = React.useState();
     const [isLoading, setIsLoading] = React.useState("");
 
-    const getProfile = async () => {
-        try {
-            const response = await service.get("/profile/get-Profile");
-
-            console.log(response);
-        } catch (error) {
-            if (error.response.status === 400) {
-                navigate("/login");
-            }
-            // console.log(error);
-        }
-    };
-
     React.useEffect(() => {
+        const getProfile = async () => {
+            try {
+                const response = await service.get("/profile/get-Profile");
+                setProfile(response.data.data);
+
+                console.log(response.data.data);
+            } catch (error) {
+                if (error.response.status === 400) {
+                    navigate("/login");
+                }
+            }
+        };
+
         getProfile();
     }, []);
 
@@ -54,13 +51,15 @@ export default function Profile() {
             <Paper elevation={20} style={paperStyle}>
                 <Grid align="center">
                     <Grid>
-                        <Avatar></Avatar>
+                        <img src={profile.photo} alt="profile"></img>
 
                         <h2>Profile Page</h2>
-                        <Typography variant="caption">
-                            Complete this form to sign up!
-                        </Typography>
                     </Grid>
+
+                    <form>
+                        <div></div>
+                        <div></div>
+                    </form>
                 </Grid>
             </Paper>
         </Grid>

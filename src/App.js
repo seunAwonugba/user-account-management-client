@@ -14,6 +14,7 @@ import ResetPasswordSent from "./page/ResetPasswordSent";
 import PasswordResetSuccess from "./page/PasswordResetSuccess";
 import Profile from "./page/Profile";
 import { useState } from "react";
+import EditProfile from "./components/EditProfile";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -68,6 +69,7 @@ function App() {
                         element={<PasswordResetSuccess />}
                     />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/edit-profile" element={<EditProfile />} />
                 </Routes>
                 <ToastContainer theme="dark" />
             </div>
