@@ -65,7 +65,9 @@ export default function Login({ handleLogin }) {
             }
         } catch (error) {
             setIsLoading(false);
-
+            if (error.message) {
+                toast.error(error.message);
+            }
             toast.error(error.response.data.data);
         }
     };
