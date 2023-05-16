@@ -1,3 +1,3 @@
-export default function EditProfile() {
-    return <div className="message-screen">Profile edit screen</div>;
+export default function Profile() {
+    return <div className="message-screen">Profile screen</div>;
 }

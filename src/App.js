@@ -12,9 +12,11 @@ import ResetPassword from "./page/ResetPassword";
 import ResetPasswordEmail from "./page/ResetPasswordEmail";
 import ResetPasswordSent from "./page/ResetPasswordSent";
 import PasswordResetSuccess from "./page/PasswordResetSuccess";
-import Profile from "./page/Profile";
+import UpdateProfile from "./page/UpdateProfile";
 import { useState } from "react";
-import EditProfile from "./components/EditProfile";
+// import EditProfile from "./components/EditProfile";
+import Dashboard from "./page/Dashboard";
+import ProfilePhoto from "./page/ProfilePhoto";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -68,8 +70,9 @@ function App() {
                         path="/password-reset-success"
                         element={<PasswordResetSuccess />}
                     />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/edit-profile" element={<EditProfile />} />
+                    <Route path="/edit-profile" element={<UpdateProfile />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/profile-photo" element={<ProfilePhoto />} />
                 </Routes>
                 <ToastContainer theme="dark" />
             </div>

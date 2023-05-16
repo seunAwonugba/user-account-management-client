@@ -14,7 +14,10 @@ export default function NavBar({ isLoggedIn, handleLogout }) {
                             <Link to="/profile">Profile</Link>
                         </li>
                         <li>
-                            <Link to="/edit-profile">Edit Profile</Link>
+                            <Link to="/edit-profile">Update Profile</Link>
+                        </li>
+                        <li>
+                            <Link to="/profile-photo">Profile Photo</Link>
                         </li>
                         <li>
                             <Link to="/login" onClick={handleLogout}>

@@ -13,10 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import service from "../service/service";
-import logo from "../profile-image.jpg";
-import { Dialog } from "primereact/dialog";
-import Avatar from "react-avatar-edit";
-
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -24,49 +20,24 @@ import FormLabel from "@mui/material/FormLabel";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import {
-    CountryDropdown,
-    RegionDropdown,
-    CountryRegionData,
-} from "react-country-region-selector";
+import { CountryDropdown } from "react-country-region-selector";
 
 //theme
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 //core
 import "primereact/resources/primereact.min.css";
 
-export default function Profile() {
+export default function UpdateProfile() {
     const navigate = useNavigate();
 
     const paperStyle = { padding: "30px 20px", width: 550 };
     const marginStyle = { marginTop: "15px" };
-
     const [profile, setProfile] = React.useState({});
-    const [image, setImage] = React.useState("");
     const [isLoading, setIsLoading] = React.useState("");
+    const [image, setImage] = React.useState("");
 
-    const [visible, setVisible] = React.useState(false);
-    const [imageCrop, setImageCrop] = React.useState(false);
-    const [storeImage, setStoreImage] = React.useState([]);
-    const [dialogs, setDialogs] = React.useState(false);
     const [age, setAge] = React.useState("");
     const [country, setCountry] = React.useState("");
-
-    const onCrop = (view) => {
-        setImageCrop(view);
-    };
-
-    const onClose = () => {
-        setImageCrop(null);
-    };
-
-    const saveImage = () => {
-        const updatedImage = { imageCrop };
-        setStoreImage([updatedImage]);
-        setVisible(false);
-    };
-
-    const showProfileImage = storeImage.length ? storeImage[0].imageCrop : logo;
 
     const handleChange = (event) => {
         setAge(event.target.value);
@@ -76,21 +47,27 @@ export default function Profile() {
         setCountry(val);
     };
 
-    React.useEffect(() => {
-        const getProfile = async () => {
-            try {
-                const response = await service.get("/profile/get-Profile");
-                setProfile(response.data.data);
+    const cancel = (e) => {
+        e.preventDefault();
+        navigate("/dashboard");
+    };
 
-                console.log(response.data.data);
+    const inputChangeHandler = (event) => {
+        setProfile(event.target.value);
+    };
+
+    React.useEffect(() => {
+        const getProfileImage = async () => {
+            try {
+                const response = await service.get("profile/get-profile-image");
+                // console.log(response.data.data.image);
+                setImage(response.data.data.image);
             } catch (error) {
-                if (error.response.status === 400) {
-                    navigate("/login");
-                }
+                console.log(error);
             }
         };
 
-        getProfile();
+        getProfileImage();
     }, []);
 
     return isLoading ? (
@@ -103,46 +80,27 @@ export default function Profile() {
                 <Paper elevation={20} style={paperStyle}>
                     <Grid>
                         <Grid align="center">
-                            <img
-                                alt="profile"
-                                src={
-                                    showProfileImage.length
-                                        ? showProfileImage
-                                        : logo
-                                }
-                                style={{
-                                    width: "120px",
-                                    height: "120px",
-                                    borderRadius: "50%",
-                                    objectFit: "cover",
-                                }}
-                                onClick={() => setVisible(true)}
-                            />
+                            <div className="image-container">
+                                {image === "" || image === null ? (
+                                    ""
+                                ) : (
+                                    <img
+                                        src={image}
+                                        alt={image}
+                                        crossOrigin="anonymous"
+                                    />
+                                )}
+                            </div>
 
-                            <h2>Complete Profile</h2>
+                            {/* <img
+                                style={{ width: "200px", height: "200px" }}
+                                alt="img"
+                                src={image}
+                            /> */}
+                            <h2>Update Profile</h2>
                             <Typography variant="caption">
-                                Complete the form to update your profile
+                                Complete form to update your profile
                             </Typography>
-
-                            <Dialog
-                                header="Header"
-                                visible={visible}
-                                onHide={() => setVisible(false)}
-                                breakpoints={{
-                                    "960px": "75vw",
-                                    "641px": "100vw",
-                                }}
-                            >
-                                <Avatar
-                                    width={390}
-                                    height={295}
-                                    onCrop={onCrop}
-                                    onClose={onClose}
-                                />
-                                <div className="center">
-                                    <Button onClick={saveImage}>Save</Button>
-                                </div>
-                            </Dialog>
                         </Grid>
 
                         <form>
@@ -152,10 +110,7 @@ export default function Profile() {
                                 variant="outlined"
                                 placeholder="First name"
                                 style={marginStyle}
-                                // value={firstName}
-                                // onChange={(e) =>
-                                //     inputChangeHandler(setFirstName, e)
-                                // }
+                                onChange={inputChangeHandler}
                                 fullWidth
                             />
                             <TextField
@@ -165,8 +120,7 @@ export default function Profile() {
                                 placeholder="Last name"
                                 type="text"
                                 style={marginStyle}
-                                // value={lastName}
-                                // onChange={(e) => inputChangeHandler(setLastName, e)}
+                                onChange={inputChangeHandler}
                                 fullWidth
                             />
                             <TextField
@@ -176,8 +130,7 @@ export default function Profile() {
                                 placeholder="Email"
                                 type="email"
                                 style={marginStyle}
-                                // value={email}
-                                // onChange={(e) => inputChangeHandler(setEmail, e)}
+                                onChange={inputChangeHandler}
                                 fullWidth
                             />
 
@@ -216,8 +169,8 @@ export default function Profile() {
                                     },
                                 }}
                                 style={marginStyle}
-                                // value={lastName}
-                                // onChange={(e) => inputChangeHandler(setLastName, e)}
+                                value={age}
+                                onChange={inputChangeHandler}
                                 fullWidth
                             />
 
@@ -247,6 +200,29 @@ export default function Profile() {
                                     value={country}
                                     onChange={(val) => selectCountry(val)}
                                 />
+                            </div>
+
+                            <div className="button-div">
+                                <div>
+                                    <Button
+                                        onClick={cancel}
+                                        variant="outlined"
+                                        type="submit"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+
+                                <Button
+                                    variant="contained"
+                                    style={{
+                                        backgroundColor: "#222222",
+                                        marginTop: "15px",
+                                    }}
+                                    type="submit"
+                                >
+                                    Save
+                                </Button>
                             </div>
                         </form>
                     </Grid>

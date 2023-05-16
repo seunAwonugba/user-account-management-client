@@ -2,16 +2,19 @@ import axios from "axios";
 
 const service = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
+    // headers: {
+    //     Accept: "application/json",
+    // },
 });
 
 //before make request
 service.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("user_management_token");
-        // console.log(token);
         if (token) {
             config.headers["Authorization"] = `Bearer ${token}`;
         }
+        delete config.headers["Content-Type"];
         return config;
     },
     (error) => {
@@ -47,7 +50,7 @@ service.interceptors.response.use(
                         }
                     );
 
-                    console.log(refreshTokenResponse);
+                    // console.log(refreshTokenResponse);
 
                     const accessToken = refreshTokenResponse.data.data;
 

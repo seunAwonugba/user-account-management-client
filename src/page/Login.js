@@ -50,10 +50,9 @@ export default function Login({ handleLogin }) {
         try {
             const response = await service.post("/auth/login", userResponse);
             setIsLoading(false);
-            console.log(response);
 
             if (response.data.success === true) {
-                navigate("/profile");
+                navigate("/dashboard");
                 handleLogin(
                     response.data.accessToken,
                     response.data.refreshToken,
