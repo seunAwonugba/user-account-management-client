@@ -3,8 +3,10 @@ import axios from "axios";
 import service from "../service/service";
 import { toast } from "react-toastify";
 import { Button, Grid, Paper, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const ImageUpload = () => {
+    const navigate = useNavigate();
     const paperStyle = { padding: "30px 20px", width: 550 };
 
     const [image, setImage] = useState({ preview: "", data: "" });
@@ -31,13 +33,20 @@ const ImageUpload = () => {
                     },
                 }
             );
+            if (response.data.success === true) {
+                navigate("/edit-profile");
+            } else {
+                toast.error(response.data.data);
+            }
             console.log(response);
         } catch (error) {
-            if (error.message) {
-                toast.error(error.message);
-            }
             toast.error(error.response.data.data);
         }
+    };
+
+    const cancel = (e) => {
+        e.preventDefault();
+        navigate("/dashboard");
     };
 
     return (
@@ -48,13 +57,17 @@ const ImageUpload = () => {
                         <Grid align="center">
                             <div className="image-container">
                                 {image.preview && (
-                                    <img src={image.preview} alt="preview" />
+                                    <img
+                                        src={image.preview}
+                                        alt="preview"
+                                        className="img"
+                                    />
                                 )}
                             </div>
 
                             <h2>Update profile image</h2>
                             <Typography variant="caption">
-                                Complete form to update your profile
+                                Select image to update
                             </Typography>
 
                             <TextField
@@ -67,7 +80,7 @@ const ImageUpload = () => {
                             <div className="button-div">
                                 <div>
                                     <Button
-                                        // onClick={cancel}
+                                        onClick={cancel}
                                         variant="outlined"
                                         type="submit"
                                     >

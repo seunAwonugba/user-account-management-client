@@ -1,27 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import service from "../service/service";
+const params = window.location.search;
+const id = new URLSearchParams(params).get("id");
+const token = new URLSearchParams(params).get("token");
 
 export default function EmailConfirmation() {
     const navigate = useNavigate();
+    const [confirmEmail, setConfirmEmail] = useState("");
 
     useEffect(() => {
-        const confirmEmail = async () => {
-            const params = window.location.search;
-            const id = new URLSearchParams(params).get("id");
-            const token = new URLSearchParams(params).get("token");
-
+        const confirmEmailRequest = async () => {
             try {
                 const response = await service.get(
                     `/auth/confirm-email/?id=${id}&token=${token}`
                 );
+                setConfirmEmail(response.data.data);
 
                 if (response.data.success === true) {
-                    // navigate("/login");
+                    navigate("/login");
                     toast.success(response.data.data);
                 } else {
-                    // navigate("/sign-up");
+                    navigate("/sign-up");
                     toast.error(response.data.data);
                 }
             } catch (error) {
@@ -30,33 +31,8 @@ export default function EmailConfirmation() {
             }
         };
 
-        confirmEmail();
-    }, [navigate]);
+        confirmEmailRequest();
+    }, []);
 
-    // const confirmEmail = async () => {
-    //     try {
-    //         const response = await service.get(
-    //             `/auth/confirm-email/?id=${id}&token=${token}`
-    //         );
-    //         console.log(response);
-    //         if (response.data.success === true) {
-    //             navigate("/login");
-    //             toast.success(response.data.data);
-    //         } else {
-    //             navigate("/sign-up");
-    //             toast.error(response.data.data);
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //         toast.error(error.response.data.data);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     confirmEmail()
-    // })
-
-    return (
-        <div className="message-screen">Email address confirmation screen</div>
-    );
+    return <div className="message-screen">{confirmEmail}</div>;
 }

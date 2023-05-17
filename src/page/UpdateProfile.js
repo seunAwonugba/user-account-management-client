@@ -26,21 +26,30 @@ import { CountryDropdown } from "react-country-region-selector";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 //core
 import "primereact/resources/primereact.min.css";
+import axios from "axios";
 
 export default function UpdateProfile() {
     const navigate = useNavigate();
 
     const paperStyle = { padding: "30px 20px", width: 550 };
     const marginStyle = { marginTop: "15px" };
-    const [profile, setProfile] = React.useState({});
+    const [fetchedProfile, setFetchedProfile] = React.useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        age: "",
+        gender: "",
+        maritalStatus: "",
+        country: "",
+    });
     const [isLoading, setIsLoading] = React.useState("");
     const [image, setImage] = React.useState("");
 
-    const [age, setAge] = React.useState("");
+    const [maritalStatus, setMaritalStatus] = React.useState("");
     const [country, setCountry] = React.useState("");
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
+    const handleMaritalStatusChange = (event) => {
+        setMaritalStatus(event.target.value);
     };
 
     const selectCountry = (val) => {
@@ -52,23 +61,43 @@ export default function UpdateProfile() {
         navigate("/dashboard");
     };
 
-    const inputChangeHandler = (event) => {
-        setProfile(event.target.value);
-    };
-
     React.useEffect(() => {
         const getProfileImage = async () => {
             try {
                 const response = await service.get("profile/get-profile-image");
-                // console.log(response.data.data.image);
                 setImage(response.data.data.image);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        const getProfile = async () => {
+            try {
+                const response = await service.get("profile/get-profile");
+                setFetchedProfile(response.data.data);
+                // console.log(response);
             } catch (error) {
                 console.log(error);
             }
         };
 
         getProfileImage();
+        getProfile();
     }, []);
+
+    const updateProfile = (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        const userResponse = {
+            firstName: fetchedProfile.firstName,
+            lastName: fetchedProfile.lastName,
+            email: fetchedProfile.email,
+            age: fetchedProfile.age,
+        };
+
+        console.log(userResponse);
+        setIsLoading(false);
+    };
 
     return isLoading ? (
         <body>
@@ -82,35 +111,41 @@ export default function UpdateProfile() {
                         <Grid align="center">
                             <div className="image-container">
                                 {image === "" || image === null ? (
-                                    ""
+                                    <img
+                                        className="img"
+                                        alt="no_profile_image_set"
+                                        src={`https://ui-avatars.com/api/?name=${fetchedProfile.firstName}+${fetchedProfile.lastName}&size=128&background=random&rounded=true`}
+                                    />
                                 ) : (
                                     <img
+                                        className="img"
                                         src={image}
                                         alt={image}
                                         crossOrigin="anonymous"
                                     />
                                 )}
                             </div>
-
-                            {/* <img
-                                style={{ width: "200px", height: "200px" }}
-                                alt="img"
-                                src={image}
-                            /> */}
                             <h2>Update Profile</h2>
                             <Typography variant="caption">
                                 Complete form to update your profile
                             </Typography>
                         </Grid>
 
-                        <form>
+                        <form onSubmit={updateProfile}>
                             <TextField
                                 id="outlined-basic"
                                 label="First name"
                                 variant="outlined"
                                 placeholder="First name"
                                 style={marginStyle}
-                                onChange={inputChangeHandler}
+                                onChange={(e) =>
+                                    setFetchedProfile({
+                                        ...fetchedProfile,
+                                        firstName: e.target.value,
+                                    })
+                                }
+                                value={fetchedProfile?.firstName}
+                                InputLabelProps={{ shrink: true }}
                                 fullWidth
                             />
                             <TextField
@@ -120,7 +155,14 @@ export default function UpdateProfile() {
                                 placeholder="Last name"
                                 type="text"
                                 style={marginStyle}
-                                onChange={inputChangeHandler}
+                                onChange={(e) =>
+                                    setFetchedProfile({
+                                        ...fetchedProfile,
+                                        lastName: e.target.value,
+                                    })
+                                }
+                                value={fetchedProfile?.lastName}
+                                InputLabelProps={{ shrink: true }}
                                 fullWidth
                             />
                             <TextField
@@ -130,7 +172,14 @@ export default function UpdateProfile() {
                                 placeholder="Email"
                                 type="email"
                                 style={marginStyle}
-                                onChange={inputChangeHandler}
+                                onChange={(e) =>
+                                    setFetchedProfile({
+                                        ...fetchedProfile,
+                                        email: e.target.value,
+                                    })
+                                }
+                                value={fetchedProfile?.email}
+                                InputLabelProps={{ shrink: true }}
                                 fullWidth
                             />
 
@@ -143,6 +192,7 @@ export default function UpdateProfile() {
                                     aria-labelledby="demo-row-radio-buttons-group-label"
                                     name="row-radio-buttons-group"
                                     className="radio-group"
+                                    value={fetchedProfile.gender}
                                 >
                                     <FormControlLabel
                                         value="female"
@@ -169,8 +219,14 @@ export default function UpdateProfile() {
                                     },
                                 }}
                                 style={marginStyle}
-                                value={age}
-                                onChange={inputChangeHandler}
+                                value={fetchedProfile.age || ""}
+                                InputLabelProps={{ shrink: true }}
+                                onChange={(e) =>
+                                    setFetchedProfile({
+                                        ...fetchedProfile,
+                                        age: e.target.value,
+                                    })
+                                }
                                 fullWidth
                             />
 
@@ -182,9 +238,9 @@ export default function UpdateProfile() {
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
-                                        value={age}
+                                        // value={age}
                                         label="Marital status"
-                                        onChange={handleChange}
+                                        onChange={handleMaritalStatusChange}
                                     >
                                         <MenuItem value={10}>Single</MenuItem>
                                         <MenuItem value={20}>Married</MenuItem>
@@ -197,7 +253,7 @@ export default function UpdateProfile() {
                             <div class="select-container">
                                 <CountryDropdown
                                     classes="dropdown "
-                                    value={country}
+                                    value={fetchedProfile.country}
                                     onChange={(val) => selectCountry(val)}
                                 />
                             </div>

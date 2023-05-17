@@ -33,7 +33,7 @@ service.interceptors.response.use(
 
         if (err.response) {
             //access token expired
-            if (err.response.status === 401 && !originalConfig._retry) {
+            if (err.response.status === 419 && !originalConfig._retry) {
                 //handle infinite loop
                 originalConfig._retry = true;
 
