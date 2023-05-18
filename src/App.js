@@ -17,6 +17,7 @@ import { useState } from "react";
 // import EditProfile from "./components/EditProfile";
 import Dashboard from "./page/Dashboard";
 import ProfilePhoto from "./page/ProfilePhoto";
+import Profile from "./page/Profile";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -73,6 +74,7 @@ function App() {
                     <Route path="/edit-profile" element={<UpdateProfile />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/profile-photo" element={<ProfilePhoto />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Routes>
                 <ToastContainer theme="dark" />
             </div>
