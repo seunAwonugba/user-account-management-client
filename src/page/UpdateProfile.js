@@ -74,7 +74,6 @@ export default function UpdateProfile() {
             try {
                 const response = await service.get("profile/get-profile");
                 setFetchedProfile(response.data.data);
-                // console.log(response);
             } catch (error) {
                 console.log(error);
             }

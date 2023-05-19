@@ -50,8 +50,6 @@ service.interceptors.response.use(
                         }
                     );
 
-                    // console.log(refreshTokenResponse);
-
                     const accessToken = refreshTokenResponse.data.data;
 
                     //store and update new access token

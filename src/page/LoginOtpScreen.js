@@ -18,7 +18,6 @@ export default function LoginOtpScreen() {
     const validateOtp = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        console.log(otp);
 
         const userResponse = {
             otp,
@@ -30,9 +29,13 @@ export default function LoginOtpScreen() {
                 userResponse
             );
             setIsLoading(false);
-            console.log(response);
+
+            if (response.data.success === true) {
+                navigate("/dashboard");
+            } else {
+                toast.error(response.data.data);
+            }
         } catch (error) {
-            console.log(error);
             toast.error(error.response.data.data);
             setIsLoading(false);
         }

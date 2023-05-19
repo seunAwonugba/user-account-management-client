@@ -33,10 +33,9 @@ export default function Profile() {
         const user = async () => {
             try {
                 const response = await service.get("user/get-user");
-                console.log(response);
                 setMfaEnabled(response.data.data.otpEnabled);
             } catch (error) {
-                console.log(error);
+                toast.error(error.response.data.data);
             }
         };
         user();
@@ -69,7 +68,6 @@ export default function Profile() {
                 "/otp/verify-otp",
                 userResponse
             );
-            console.log(response);
 
             if (response.data.success === true) {
                 toast.success("MFA Verification successful");
@@ -90,6 +88,24 @@ export default function Profile() {
     const inputChangeHandler = (setFunction, event) => {
         setFunction(event.target.value);
     };
+
+    const disableOtp = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            const response = await service.patch("/otp/disable-otp");
+            if (response.data.success == true) {
+                setIsLoading(false);
+                window.location.reload(true);
+            } else {
+                toast.error(response.data.data);
+            }
+        } catch (error) {
+            toast.error(error.response.data.data);
+            setIsLoading(false);
+        }
+    };
     return isLoading ? (
         <body>
             <h4>Loading...</h4>
@@ -97,7 +113,11 @@ export default function Profile() {
     ) : (
         <div className="message-screen">
             {mfaEnabled ? (
-                <Button variant="contained" color="error">
+                <Button
+                    onClick={(e) => disableOtp(e)}
+                    variant="contained"
+                    color="error"
+                >
                     Cancel MFA
                 </Button>
             ) : (

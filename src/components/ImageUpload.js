@@ -38,7 +38,6 @@ const ImageUpload = () => {
             } else {
                 toast.error(response.data.data);
             }
-            console.log(response);
         } catch (error) {
             toast.error(error.response.data.data);
         }

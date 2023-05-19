@@ -26,7 +26,6 @@ export default function EmailConfirmation() {
                     toast.error(response.data.data);
                 }
             } catch (error) {
-                console.log(error);
                 toast.error(error.response.data.data);
             }
         };
