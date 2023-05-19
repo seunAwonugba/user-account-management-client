@@ -35,7 +35,9 @@ export default function Profile() {
                 const response = await service.get("user/get-user");
                 console.log(response);
                 setMfaEnabled(response.data.data.otpEnabled);
-            } catch (error) {}
+            } catch (error) {
+                console.log(error);
+            }
         };
         user();
     }, []);
@@ -71,12 +73,12 @@ export default function Profile() {
 
             if (response.data.success === true) {
                 toast.success("MFA Verification successful");
-                navigate("/profile");
                 setIsLoading(false);
                 handleClose();
                 setOtp("");
+                window.location.reload(true);
             } else {
-                toast.error(response.data.data);
+                toast.error(`${response.data.data}`);
             }
         } catch (error) {
             console.log(error);
@@ -95,7 +97,9 @@ export default function Profile() {
     ) : (
         <div className="message-screen">
             {mfaEnabled ? (
-                <Button variant="contained">Cancel MFA</Button>
+                <Button variant="contained" color="error">
+                    Cancel MFA
+                </Button>
             ) : (
                 <Button
                     variant="contained"

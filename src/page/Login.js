@@ -52,8 +52,11 @@ export default function Login({ handleLogin }) {
             setIsLoading(false);
 
             if (response.data.success === true) {
-                console.log(response.data.data);
-                navigate("/dashboard");
+                if (response.data.data.otpEnabled === true) {
+                    navigate("/login-otp-screen");
+                } else {
+                    navigate("/dashboard");
+                }
                 handleLogin(
                     response.data.accessToken,
                     response.data.refreshToken,
@@ -65,6 +68,7 @@ export default function Login({ handleLogin }) {
             }
         } catch (error) {
             setIsLoading(false);
+            console.log(error);
             toast.error(error.response.data.data);
         }
     };

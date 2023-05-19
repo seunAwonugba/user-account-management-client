@@ -19,10 +19,10 @@ export default function EmailConfirmation() {
                 setConfirmEmail(response.data.data);
 
                 if (response.data.success === true) {
-                    // navigate("/login");
+                    navigate("/login");
                     toast.success(response.data.data);
                 } else {
-                    // navigate("/sign-up");
+                    navigate("/sign-up");
                     toast.error(response.data.data);
                 }
             } catch (error) {

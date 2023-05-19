@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import NavBar from "./components/NavBar";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./page/Home";
 import Login from "./page/Login";
 import SignUp from "./page/SignUp";
@@ -14,10 +14,10 @@ import ResetPasswordSent from "./page/ResetPasswordSent";
 import PasswordResetSuccess from "./page/PasswordResetSuccess";
 import UpdateProfile from "./page/UpdateProfile";
 import { useState } from "react";
-// import EditProfile from "./components/EditProfile";
 import Dashboard from "./page/Dashboard";
 import ProfilePhoto from "./page/ProfilePhoto";
 import Profile from "./page/Profile";
+import LoginOtpScreen from "./page/LoginOtpScreen";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
@@ -38,9 +38,14 @@ function App() {
         setIsLoggedIn(false);
     };
 
+    const location = useLocation();
+    const isLoginOtpScreen = location.pathname === "/login-otp-screen";
+
     return (
         <>
-            <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+            {!isLoginOtpScreen && (
+                <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+            )}
             <div className="container">
                 <Routes>
                     <Route path="/" element={<Home />} />
@@ -75,6 +80,10 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/profile-photo" element={<ProfilePhoto />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route
+                        path="/login-otp-screen"
+                        element={<LoginOtpScreen />}
+                    />
                 </Routes>
                 <ToastContainer theme="dark" />
             </div>
