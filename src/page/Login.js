@@ -52,6 +52,7 @@ export default function Login({ handleLogin }) {
             setIsLoading(false);
 
             if (response.data.success === true) {
+                console.log(response.data.data);
                 navigate("/dashboard");
                 handleLogin(
                     response.data.accessToken,

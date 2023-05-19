@@ -1,9 +1,11 @@
 import { Button, TextField } from "@mui/material";
 import service from "../service/service";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const style = {
     position: "absolute",
@@ -18,12 +20,25 @@ const style = {
 };
 
 export default function Profile() {
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState("");
     const [otp, setOtp] = useState("");
+    const [mfaEnabled, setMfaEnabled] = useState("");
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    useEffect(() => {
+        const user = async () => {
+            try {
+                const response = await service.get("user/get-user");
+                console.log(response);
+                setMfaEnabled(response.data.data.otpEnabled);
+            } catch (error) {}
+        };
+        user();
+    }, []);
 
     const setupMFA = async (e) => {
         e.preventDefault();
@@ -39,21 +54,35 @@ export default function Profile() {
         }
     };
 
-    const validateOtp = async (e) => {
+    const verifyOtp = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-        console.log(otp);
-        setIsLoading(false);
-        handleClose();
 
-        // try {
-        //     const response = await service.patch("/otp/set-up-otp");
-        //     console.log(response);
-        //     setIsLoading(false);
-        // } catch (error) {
-        //     console.log(error);
-        //     setIsLoading(false);
-        // }
+        const userResponse = {
+            otp,
+        };
+
+        try {
+            const response = await service.patch(
+                "/otp/verify-otp",
+                userResponse
+            );
+            console.log(response);
+
+            if (response.data.success === true) {
+                toast.success("MFA Verification successful");
+                navigate("/profile");
+                setIsLoading(false);
+                handleClose();
+                setOtp("");
+            } else {
+                toast.error(response.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+            setOtp("");
+        }
     };
 
     const inputChangeHandler = (setFunction, event) => {
@@ -65,15 +94,20 @@ export default function Profile() {
         </body>
     ) : (
         <div className="message-screen">
-            <Button
-                variant="contained"
-                onClick={(e) => {
-                    setupMFA(e);
-                    handleOpen();
-                }}
-            >
-                Setup 2FA
-            </Button>
+            {mfaEnabled ? (
+                <Button variant="contained">Cancel MFA</Button>
+            ) : (
+                <Button
+                    variant="contained"
+                    onClick={(e) => {
+                        setupMFA(e);
+                        handleOpen();
+                    }}
+                >
+                    Setup 2FA
+                </Button>
+            )}
+
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -81,12 +115,15 @@ export default function Profile() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <form onSubmit={validateOtp}>
+                    <Typography>Token expires in 30 seconds</Typography>
+
+                    <form onSubmit={verifyOtp}>
                         <TextField
                             id="outlined-basic"
                             label="OTP secret"
                             variant="outlined"
                             fullWidth
+                            margin={"dense"}
                             type="tel"
                             InputProps={{
                                 inputProps: {
@@ -104,7 +141,6 @@ export default function Profile() {
                                 variant="contained"
                                 style={{
                                     backgroundColor: "#222222",
-                                    marginTop: "5px",
                                 }}
                                 type="submit"
                             >
