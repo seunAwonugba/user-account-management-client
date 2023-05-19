@@ -18,17 +18,23 @@ export default function LoginOtpScreen() {
     const validateOtp = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        console.log(otp);
 
         const userResponse = {
             otp,
         };
 
         try {
-            const response = service.post("/otp/validate-otp", userResponse);
+            const response = await service.post(
+                "/otp/validate-otp",
+                userResponse
+            );
+            setIsLoading(false);
             console.log(response);
         } catch (error) {
             console.log(error);
-            toast.error(error);
+            toast.error(error.response.data.data);
+            setIsLoading(false);
         }
     };
 
