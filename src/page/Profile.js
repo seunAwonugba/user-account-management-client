@@ -51,6 +51,7 @@ export default function Profile() {
 
         try {
             const response = await service.patch("/otp/set-up-otp");
+            console.log(response);
             setOtpUrl(response.data.data.otpAuthUrl);
             setIsLoading(false);
         } catch (error) {
@@ -113,7 +114,7 @@ export default function Profile() {
 
     useEffect(() => {
         qrcode.toDataURL(otpUrl).then(setQrCodeUrl);
-    });
+    }, [otpUrl]);
 
     return isLoading ? (
         <body>
