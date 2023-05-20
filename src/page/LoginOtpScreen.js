@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import service from "../service/service";
 
-export default function LoginOtpScreen() {
+export default function LoginOtpScreen({ handleLogout }) {
     const navigate = useNavigate();
     const paperStyle = { padding: "30px 20px", width: 550 };
     const marginStyle = { marginTop: "15px" };
@@ -77,7 +77,10 @@ export default function LoginOtpScreen() {
                     <div className="button-div">
                         <div>
                             <Button
-                                onClick={() => navigate("/login")}
+                                onClick={() => {
+                                    navigate("/login");
+                                    handleLogout();
+                                }}
                                 variant="outlined"
                             >
                                 Cancel

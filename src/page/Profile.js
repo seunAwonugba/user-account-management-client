@@ -1,4 +1,4 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import service from "../service/service";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
@@ -6,13 +6,14 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import qrcode from "qrcode";
 
 const style = {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 600,
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
@@ -24,6 +25,8 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState("");
     const [otp, setOtp] = useState("");
     const [mfaEnabled, setMfaEnabled] = useState("");
+    const [otpUrl, setOtpUrl] = useState("");
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -38,6 +41,7 @@ export default function Profile() {
                 toast.error(error.response.data.data);
             }
         };
+
         user();
     }, []);
 
@@ -47,7 +51,7 @@ export default function Profile() {
 
         try {
             const response = await service.patch("/otp/set-up-otp");
-            console.log(response);
+            setOtpUrl(response.data.data.otpAuthUrl);
             setIsLoading(false);
         } catch (error) {
             console.log(error);
@@ -95,7 +99,7 @@ export default function Profile() {
 
         try {
             const response = await service.patch("/otp/disable-otp");
-            if (response.data.success == true) {
+            if (response.data.success === true) {
                 setIsLoading(false);
                 window.location.reload(true);
             } else {
@@ -106,6 +110,11 @@ export default function Profile() {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        qrcode.toDataURL(otpUrl).then(setQrCodeUrl);
+    });
+
     return isLoading ? (
         <body>
             <h4>Loading...</h4>
@@ -139,12 +148,38 @@ export default function Profile() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <Typography>Token expires in 30 seconds</Typography>
+                    <h3>Two-Factor Authentication (2FA)</h3>
+
+                    <Typography>
+                        Supports Google Authenticator and other two-factor
+                        devices
+                    </Typography>
+
+                    <div>
+                        <li>
+                            Install Google Authenticator (IOS - Android) or
+                            Authy (IOS - Android).
+                        </li>
+                        <li>In the authenticator app, select "+" icon.</li>
+                        <li>
+                            Select "Scan a barcode (or QR code)" and use the
+                            phone's camera to scan this barcode.
+                        </li>
+                    </div>
+
+                    <h4>Scan QR Code</h4>
+                    <Grid align="center">
+                        <img
+                            style={{ width: "200px", height: "200px" }}
+                            src={qrCodeUrl}
+                            alt="qrcode url"
+                        />
+                    </Grid>
 
                     <form onSubmit={verifyOtp}>
                         <TextField
                             id="outlined-basic"
-                            label="OTP secret"
+                            label="Verify code"
                             variant="outlined"
                             fullWidth
                             margin={"dense"}

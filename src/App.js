@@ -82,7 +82,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route
                         path="/login-otp-screen"
-                        element={<LoginOtpScreen />}
+                        element={<LoginOtpScreen handleLogout={handleLogout} />}
                     />
                 </Routes>
                 <ToastContainer theme="dark" />
