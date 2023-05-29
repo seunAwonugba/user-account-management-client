@@ -1,4 +1,4 @@
-import { Button, Grid, TextField } from "@mui/material";
+import { Button, Grid, Paper, TextField } from "@mui/material";
 import service from "../service/service";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
@@ -27,6 +27,7 @@ export default function Profile() {
     const [mfaEnabled, setMfaEnabled] = useState("");
     const [otpUrl, setOtpUrl] = useState("");
     const [qrCodeUrl, setQrCodeUrl] = useState("");
+    const [profileDetails, setProfileDetails] = useState({});
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -38,11 +39,24 @@ export default function Profile() {
                 const response = await service.get("user/get-user");
                 setMfaEnabled(response.data.data.otpEnabled);
             } catch (error) {
+                if (error.code === "ERR_NETWORK") {
+                    toast.error(error.message);
+                }
                 toast.error(error.response.data.data);
             }
         };
 
+        const profile = async () => {
+            try {
+                const response = await service.get("profile/get-profile");
+                setProfileDetails(response.data.data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
         user();
+        profile();
     }, []);
 
     const setupMFA = async (e) => {
@@ -55,8 +69,11 @@ export default function Profile() {
             setOtpUrl(response.data.data.otpAuthUrl);
             setIsLoading(false);
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
+            if (error.code === "ERR_NETWORK") {
+                toast.error(error.message);
+            }
+            toast.error(error.response.data.data);
         }
     };
 
@@ -116,100 +133,154 @@ export default function Profile() {
         qrcode.toDataURL(otpUrl).then(setQrCodeUrl);
     }, [otpUrl]);
 
+    const paperStyle = { padding: "30px 20px", width: 650 };
+
     return isLoading ? (
         <body>
             <h4>Loading...</h4>
         </body>
     ) : (
-        <div className="message-screen">
-            {mfaEnabled ? (
-                <Button
-                    onClick={(e) => disableOtp(e)}
-                    variant="contained"
-                    color="error"
-                >
-                    Cancel MFA
-                </Button>
-            ) : (
-                <Button
-                    variant="contained"
-                    onClick={(e) => {
-                        setupMFA(e);
-                        handleOpen();
-                    }}
-                >
-                    Setup 2FA
-                </Button>
-            )}
-
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <h3>Two-Factor Authentication (2FA)</h3>
-
-                    <Typography>
-                        Supports Google Authenticator and other two-factor
-                        devices
-                    </Typography>
-
+        <Grid>
+            <Paper elevation={20} style={paperStyle}>
+                <div className="profile-container">
                     <div>
-                        <li>
-                            Install Google Authenticator (IOS - Android) or
-                            Authy (IOS - Android).
-                        </li>
-                        <li>In the authenticator app, select "+" icon.</li>
-                        <li>
-                            Select "Scan a barcode (or QR code)" and use the
-                            phone's camera to scan this barcode.
-                        </li>
+                        <h3> Profile details</h3>
+                        <div>
+                            Name: {profileDetails.firstName}{" "}
+                            {profileDetails.lastName}{" "}
+                        </div>
+                        <div>Email: {profileDetails.email} </div>
+                        <div>
+                            Age:{" "}
+                            {profileDetails.age === null
+                                ? "not set"
+                                : profileDetails.age}
+                        </div>
+                        <div>
+                            DOB:{" "}
+                            {profileDetails.dob == null
+                                ? "not set"
+                                : profileDetails.dob}{" "}
+                        </div>
+                        <div>
+                            Marital status:{" "}
+                            {profileDetails.maritalStatus === null
+                                ? "not set"
+                                : profileDetails.maritalStatus}{" "}
+                        </div>
+                        <div>
+                            Nationality:{" "}
+                            {profileDetails.nationality === null
+                                ? "not set"
+                                : profileDetails.nationality}
+                        </div>
                     </div>
 
-                    <h4>Scan QR Code</h4>
-                    <Grid align="center">
-                        <img
-                            style={{ width: "200px", height: "200px" }}
-                            src={qrCodeUrl}
-                            alt="qrcode url"
-                        />
-                    </Grid>
-
-                    <form onSubmit={verifyOtp}>
-                        <TextField
-                            id="outlined-basic"
-                            label="Verify code"
-                            variant="outlined"
-                            fullWidth
-                            margin={"dense"}
-                            type="tel"
-                            InputProps={{
-                                inputProps: {
-                                    maxLength: 6,
-                                },
-                            }}
-                            value={otp}
-                            onChange={(e) => inputChangeHandler(setOtp, e)}
-                        />
-
-                        <div className="button-div">
-                            <div></div>
-
+                    <div>
+                        <h3>Mobile App Authentication</h3>
+                        <p style={{ paddingBottom: "8px" }}>
+                            Secure your account with MFA{" "}
+                        </p>
+                        {mfaEnabled ? (
+                            <Button
+                                onClick={(e) => disableOtp(e)}
+                                variant="contained"
+                                color="error"
+                            >
+                                Cancel MFA
+                            </Button>
+                        ) : (
                             <Button
                                 variant="contained"
-                                style={{
-                                    backgroundColor: "#222222",
+                                onClick={(e) => {
+                                    setupMFA(e);
+                                    handleOpen();
                                 }}
-                                type="submit"
                             >
-                                Continue
+                                Setup 2FA
                             </Button>
-                        </div>
-                    </form>
-                </Box>
-            </Modal>
-        </div>
+                        )}
+
+                        <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                        >
+                            <Box sx={style}>
+                                <h3>Two-Factor Authentication (2FA)</h3>
+
+                                <Typography>
+                                    Supports Google Authenticator and other
+                                    two-factor devices
+                                </Typography>
+
+                                <div>
+                                    <li>
+                                        Install Google Authenticator (IOS -
+                                        Android) or Authy (IOS - Android).
+                                    </li>
+                                    <li>
+                                        In the authenticator app, select "+"
+                                        icon.
+                                    </li>
+                                    <li>
+                                        Select "Scan a barcode (or QR code)" and
+                                        use the phone's camera to scan this
+                                        barcode.
+                                    </li>
+                                </div>
+
+                                <h4>Scan QR Code</h4>
+                                <Grid align="center">
+                                    <img
+                                        style={{
+                                            width: "200px",
+                                            height: "200px",
+                                        }}
+                                        src={qrCodeUrl}
+                                        alt="qrcode url"
+                                    />
+                                </Grid>
+
+                                <form onSubmit={verifyOtp}>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Verify code"
+                                        variant="outlined"
+                                        fullWidth
+                                        margin={"dense"}
+                                        type="tel"
+                                        InputProps={{
+                                            inputProps: {
+                                                maxLength: 6,
+                                            },
+                                        }}
+                                        value={otp}
+                                        onChange={(e) =>
+                                            inputChangeHandler(setOtp, e)
+                                        }
+                                    />
+
+                                    <div className="button-div">
+                                        <div></div>
+
+                                        <Button
+                                            variant="contained"
+                                            style={{
+                                                backgroundColor: "#222222",
+                                            }}
+                                            type="submit"
+                                        >
+                                            Continue
+                                        </Button>
+                                    </div>
+                                </form>
+                            </Box>
+                        </Modal>
+                    </div>
+                </div>
+            </Paper>
+        </Grid>
     );
 }

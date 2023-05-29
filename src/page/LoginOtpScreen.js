@@ -36,8 +36,11 @@ export default function LoginOtpScreen({ handleLogout }) {
                 toast.error(response.data.data);
             }
         } catch (error) {
-            toast.error(error.response.data.data);
             setIsLoading(false);
+            if (error.code === "ERR_NETWORK") {
+                toast.error(error.message);
+            }
+            toast.error(error.response.data.data);
         }
     };
 

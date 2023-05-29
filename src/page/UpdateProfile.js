@@ -26,7 +26,6 @@ import { CountryDropdown } from "react-country-region-selector";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 //core
 import "primereact/resources/primereact.min.css";
-import axios from "axios";
 
 export default function UpdateProfile() {
     const navigate = useNavigate();

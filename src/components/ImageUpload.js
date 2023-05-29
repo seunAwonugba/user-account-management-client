@@ -64,10 +64,9 @@ const ImageUpload = () => {
                                 )}
                             </div>
 
-                            <h2>Update profile image</h2>
-                            <Typography variant="caption">
-                                Select image to update
-                            </Typography>
+                            <h3 style={{ padding: "8px" }}>
+                                Update profile image
+                            </h3>
 
                             <TextField
                                 type="file"

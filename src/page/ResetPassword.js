@@ -70,7 +70,9 @@ export default function ResetPassword() {
             }
         } catch (error) {
             setIsLoading(false);
-
+            if (error.code === "ERR_NETWORK") {
+                toast.error(error.message);
+            }
             toast.error(error.response.data.data);
         }
     };
