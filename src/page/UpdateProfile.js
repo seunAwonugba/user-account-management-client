@@ -39,21 +39,10 @@ export default function UpdateProfile() {
         age: "",
         gender: "",
         maritalStatus: "",
-        country: "",
+        nationality: "",
     });
     const [isLoading, setIsLoading] = React.useState("");
     const [image, setImage] = React.useState("");
-
-    const [maritalStatus, setMaritalStatus] = React.useState("");
-    const [country, setCountry] = React.useState("");
-
-    const handleMaritalStatusChange = (event) => {
-        setMaritalStatus(event.target.value);
-    };
-
-    const selectCountry = (val) => {
-        setCountry(val);
-    };
 
     const cancel = (e) => {
         e.preventDefault();
@@ -66,12 +55,13 @@ export default function UpdateProfile() {
                 const response = await service.get("profile/get-profile-image");
                 setImage(response.data.data.image);
             } catch (error) {
-                console.log(error);
+                // console.log(error);
             }
         };
         const getProfile = async () => {
             try {
                 const response = await service.get("profile/get-profile");
+                console.log(response);
                 setFetchedProfile(response.data.data);
             } catch (error) {
                 console.log(error);
@@ -82,7 +72,7 @@ export default function UpdateProfile() {
         getProfile();
     }, []);
 
-    const updateProfile = (e) => {
+    const updateProfile = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
@@ -91,9 +81,33 @@ export default function UpdateProfile() {
             lastName: fetchedProfile.lastName,
             email: fetchedProfile.email,
             age: fetchedProfile.age,
+            gender: fetchedProfile.gender,
+            maritalStatus: fetchedProfile.maritalStatus,
+            country: fetchedProfile.nationality,
         };
 
-        console.log(userResponse);
+        try {
+            const response = await service.patch(
+                "/profile/edit-profile",
+                userResponse
+            );
+            setIsLoading(false);
+
+            if (response.data.success === true) {
+                toast.success("Profile update successful");
+                navigate("/dashboard");
+            } else {
+                setIsLoading(false);
+                toast.error(response.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+            setIsLoading(false);
+            if (error.code === "ERR_NETWORK") {
+                toast.error(error.message);
+            }
+            toast.error(error.response.data.data);
+        }
         setIsLoading(false);
     };
 
@@ -190,7 +204,13 @@ export default function UpdateProfile() {
                                     aria-labelledby="demo-row-radio-buttons-group-label"
                                     name="row-radio-buttons-group"
                                     className="radio-group"
-                                    value={fetchedProfile.gender}
+                                    onChange={(e) =>
+                                        setFetchedProfile({
+                                            ...fetchedProfile,
+                                            gender: e.target.value,
+                                        })
+                                    }
+                                    value={fetchedProfile?.gender}
                                 >
                                     <FormControlLabel
                                         value="female"
@@ -236,14 +256,27 @@ export default function UpdateProfile() {
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
-                                        // value={age}
                                         label="Marital status"
-                                        onChange={handleMaritalStatusChange}
+                                        onChange={(e) =>
+                                            setFetchedProfile({
+                                                ...fetchedProfile,
+                                                maritalStatus: e.target.value,
+                                            })
+                                        }
+                                        value={fetchedProfile.maritalStatus}
                                     >
-                                        <MenuItem value={10}>Single</MenuItem>
-                                        <MenuItem value={20}>Married</MenuItem>
-                                        <MenuItem value={30}>Divorced</MenuItem>
-                                        <MenuItem value={30}>Widowed</MenuItem>
+                                        <MenuItem value={"SINGLE"}>
+                                            Single
+                                        </MenuItem>
+                                        <MenuItem value={"MARRIED"}>
+                                            Married
+                                        </MenuItem>
+                                        <MenuItem value={"DIVORCED"}>
+                                            Divorced
+                                        </MenuItem>
+                                        <MenuItem value={"WIDOWED"}>
+                                            Widowed
+                                        </MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
@@ -251,8 +284,14 @@ export default function UpdateProfile() {
                             <div class="select-container">
                                 <CountryDropdown
                                     classes="dropdown "
-                                    value={fetchedProfile.country}
-                                    onChange={(val) => selectCountry(val)}
+                                    value={fetchedProfile.nationality}
+                                    // onChange={(val) => selectCountry(val)}
+                                    onChange={(e) =>
+                                        setFetchedProfile({
+                                            ...fetchedProfile,
+                                            nationality: e,
+                                        })
+                                    }
                                 />
                             </div>
 
