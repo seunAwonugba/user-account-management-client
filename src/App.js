@@ -20,6 +20,7 @@ import Profile from "./page/Profile";
 import LoginOtpScreen from "./page/LoginOtpScreen";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import VerifyMe from "./page/VerifyMe";
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
         Boolean(localStorage.getItem("user_management_token"))
@@ -100,6 +101,7 @@ function App() {
                                 <LoginOtpScreen handleLogout={handleLogout} />
                             }
                         />
+                        <Route path="/verify-me" element={<VerifyMe />} />
                     </Routes>
                     <ToastContainer theme="dark" />
                 </div>

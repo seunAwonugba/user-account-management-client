@@ -72,7 +72,7 @@ const ImageUpload = () => {
                             <TextField
                                 type="file"
                                 name="profile-image"
-                                accept="image/*"
+                                inputProps={{ accept: "image/*" }}
                                 onChange={handleImageChange}
                             />
 
