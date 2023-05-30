@@ -7,6 +7,7 @@ import Modal from "@mui/material/Modal";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import qrcode from "qrcode";
+import dayjs from "dayjs";
 
 const style = {
     position: "absolute",
@@ -160,7 +161,9 @@ export default function Profile() {
                             DOB:{" "}
                             {profileDetails.dob == null
                                 ? "not set"
-                                : profileDetails.dob}{" "}
+                                : dayjs(profileDetails.dob).format(
+                                      "DD/MM/YYYY"
+                                  )}
                         </div>
                         <div>
                             Marital status:{" "}

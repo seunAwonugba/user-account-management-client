@@ -34,7 +34,8 @@ const ImageUpload = () => {
                 }
             );
             if (response.data.success === true) {
-                navigate("/edit-profile");
+                navigate("/dashboard");
+                toast.success("Profile image updated");
             } else {
                 toast.error(response.data.data);
             }

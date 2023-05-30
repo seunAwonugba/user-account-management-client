@@ -18,7 +18,8 @@ import Dashboard from "./page/Dashboard";
 import ProfilePhoto from "./page/ProfilePhoto";
 import Profile from "./page/Profile";
 import LoginOtpScreen from "./page/LoginOtpScreen";
-
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
         Boolean(localStorage.getItem("user_management_token"))
@@ -43,50 +44,66 @@ function App() {
 
     return (
         <>
-            {!isLoginOtpScreen && (
-                <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-            )}
-            <div className="container">
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route
-                        path="/login"
-                        element={<Login handleLogin={handleLogin} />}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {!isLoginOtpScreen && (
+                    <NavBar
+                        isLoggedIn={isLoggedIn}
+                        handleLogout={handleLogout}
                     />
-                    <Route path="/sign-up" element={<SignUp />} />
+                )}
+                <div className="container">
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route
+                            path="/login"
+                            element={<Login handleLogin={handleLogin} />}
+                        />
+                        <Route path="/sign-up" element={<SignUp />} />
 
-                    <Route
-                        path="/email-confirmation-sent"
-                        element={<EmailConfirmationSent />}
-                    />
-                    <Route
-                        path="/email-confirmation"
-                        element={<EmailConfirmation />}
-                    />
-                    <Route
-                        path="/reset-password-email"
-                        element={<ResetPasswordEmail />}
-                    />
-                    <Route
-                        path="/reset-password-sent"
-                        element={<ResetPasswordSent />}
-                    />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route
-                        path="/password-reset-success"
-                        element={<PasswordResetSuccess />}
-                    />
-                    <Route path="/edit-profile" element={<UpdateProfile />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/profile-photo" element={<ProfilePhoto />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route
-                        path="/login-otp-screen"
-                        element={<LoginOtpScreen handleLogout={handleLogout} />}
-                    />
-                </Routes>
-                <ToastContainer theme="dark" />
-            </div>
+                        <Route
+                            path="/email-confirmation-sent"
+                            element={<EmailConfirmationSent />}
+                        />
+                        <Route
+                            path="/email-confirmation"
+                            element={<EmailConfirmation />}
+                        />
+                        <Route
+                            path="/reset-password-email"
+                            element={<ResetPasswordEmail />}
+                        />
+                        <Route
+                            path="/reset-password-sent"
+                            element={<ResetPasswordSent />}
+                        />
+                        <Route
+                            path="/reset-password"
+                            element={<ResetPassword />}
+                        />
+                        <Route
+                            path="/password-reset-success"
+                            element={<PasswordResetSuccess />}
+                        />
+                        <Route
+                            path="/edit-profile"
+                            element={<UpdateProfile />}
+                        />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route
+                            path="/profile-photo"
+                            element={<ProfilePhoto />}
+                        />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route
+                            path="/login-otp-screen"
+                            element={
+                                <LoginOtpScreen handleLogout={handleLogout} />
+                            }
+                        />
+                    </Routes>
+                    <ToastContainer theme="dark" />
+                </div>
+            </LocalizationProvider>
         </>
     );
 }

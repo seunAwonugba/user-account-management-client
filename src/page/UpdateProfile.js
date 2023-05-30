@@ -5,7 +5,6 @@ import {
     FormControl,
     Grid,
     InputLabel,
-    OutlinedInput,
     Paper,
     Typography,
 } from "@mui/material";
@@ -21,11 +20,12 @@ import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { CountryDropdown } from "react-country-region-selector";
-
+import dayjs from "dayjs";
 //theme
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 //core
 import "primereact/resources/primereact.min.css";
+import DatePickerComponent from "../components/DatePickerComponent";
 
 export default function UpdateProfile() {
     const navigate = useNavigate();
@@ -40,6 +40,7 @@ export default function UpdateProfile() {
         gender: "",
         maritalStatus: "",
         nationality: "",
+        dob: "",
     });
     const [isLoading, setIsLoading] = React.useState("");
     const [image, setImage] = React.useState("");
@@ -84,7 +85,9 @@ export default function UpdateProfile() {
             gender: fetchedProfile.gender,
             maritalStatus: fetchedProfile.maritalStatus,
             country: fetchedProfile.nationality,
+            dob: fetchedProfile.dob.toISOString(),
         };
+        console.log(userResponse);
 
         try {
             const response = await service.patch(
@@ -246,6 +249,16 @@ export default function UpdateProfile() {
                                     })
                                 }
                                 fullWidth
+                            />
+
+                            <DatePickerComponent
+                                value={dayjs(fetchedProfile.dob)}
+                                onChange={(e) =>
+                                    setFetchedProfile({
+                                        ...fetchedProfile,
+                                        dob: e,
+                                    })
+                                }
                             />
 
                             <Box sx={{ minWidth: 120 }} style={marginStyle}>
