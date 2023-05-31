@@ -22,6 +22,12 @@ export default function VerifyMe() {
         setFunction(event.target.value);
     };
 
+    const fileChangeHandler = (e) => {
+        if (e.target.files) {
+            setVerifyMeDocs(e.target.files[0]);
+        }
+    };
+
     const verifyMe = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -41,8 +47,14 @@ export default function VerifyMe() {
                     },
                 }
             );
-            console.log(response);
-            console.log(formData);
+            setIsLoading(false);
+
+            if (response.data.success === true) {
+                navigate("/dashboard");
+                toast.success("Document sent for verification");
+            } else {
+                toast.error(response.data.data);
+            }
         } catch (error) {
             setIsLoading(false);
             toast.error(error.response.data.data);
@@ -78,7 +90,7 @@ export default function VerifyMe() {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             name="documentType"
-                            // value={age}
+                            value={documentType}
                             label="Means of identification"
                             onChange={(e) =>
                                 inputChangeHandler(setDocumentType, e)
@@ -100,7 +112,7 @@ export default function VerifyMe() {
                         type="text"
                         style={marginStyle}
                         name="documentNumber"
-                        // value={email}
+                        value={documentNumber}
                         onChange={(e) =>
                             inputChangeHandler(setDocumentNumber, e)
                         }
@@ -114,7 +126,7 @@ export default function VerifyMe() {
                         style={marginStyle}
                         variant="outlined"
                         placeholder="Select ID"
-                        onChange={(e) => inputChangeHandler(setVerifyMeDocs, e)}
+                        onChange={fileChangeHandler}
                         fullWidth
                     />
 
