@@ -148,7 +148,7 @@ export default function VerifyMe() {
                             }}
                             type="submit"
                         >
-                            Login
+                            Verify me
                         </Button>
                     </div>
                 </form>

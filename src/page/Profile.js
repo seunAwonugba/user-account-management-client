@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import qrcode from "qrcode";
 import dayjs from "dayjs";
-
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 const style = {
     position: "absolute",
     top: "50%",
@@ -26,6 +26,7 @@ export default function Profile() {
     const [isLoading, setIsLoading] = useState("");
     const [otp, setOtp] = useState("");
     const [mfaEnabled, setMfaEnabled] = useState("");
+    const [isUserVerified, setIsUserVerified] = useState("");
     const [otpUrl, setOtpUrl] = useState("");
     const [qrCodeUrl, setQrCodeUrl] = useState("");
     const [profileDetails, setProfileDetails] = useState({});
@@ -38,7 +39,9 @@ export default function Profile() {
         const user = async () => {
             try {
                 const response = await service.get("user/get-user");
+                console.log(response);
                 setMfaEnabled(response.data.data.otpEnabled);
+                setIsUserVerified(response.data.data.status);
             } catch (error) {
                 if (error.code === "ERR_NETWORK") {
                     toast.error(error.message);
@@ -146,9 +149,17 @@ export default function Profile() {
                 <div className="profile-container">
                     <div>
                         <h3> Profile details</h3>
-                        <div>
-                            Name: {profileDetails.firstName}{" "}
-                            {profileDetails.lastName}{" "}
+                        <div className="verified-name">
+                            <div>
+                                Name: {profileDetails.firstName}{" "}
+                                {profileDetails.lastName}
+                            </div>
+                            {isUserVerified === "VERIFIED" && (
+                                <CheckCircleIcon
+                                    color="primary"
+                                    fontSize="small"
+                                />
+                            )}
                         </div>
                         <div>Email: {profileDetails.email} </div>
                         <div>
